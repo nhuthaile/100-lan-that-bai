@@ -1,0 +1,36 @@
+---
+const year = new Date().getFullYear();
+---
+
+<footer>
+	<div class="footer-inner">
+		<p class="footer-tagline">Thất bại không phải là kết thúc — mà là dữ liệu.</p>
+		<p class="footer-meta">
+			© {year} 100 Lần Thất Bại &middot;
+			Build with ☕ somewhere in Vietnam
+		</p>
+	</div>
+</footer>
+
+<style>
+	footer {
+		border-top: 1px solid var(--border);
+		padding: 3rem 1.5rem;
+		margin-top: 4rem;
+	}
+	.footer-inner {
+		max-width: 740px;
+		margin: 0 auto;
+		text-align: center;
+	}
+	.footer-tagline {
+		font-family: var(--font-mono), monospace;
+		font-size: 0.85rem;
+		color: var(--accent);
+		margin-bottom: 0.5rem;
+	}
+	.footer-meta {
+		font-size: 0.8rem;
+		color: var(--text-dim);
+	}
+</style>

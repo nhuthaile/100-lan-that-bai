@@ -1,0 +1,377 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import FormattedDate from '../components/FormattedDate.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { getCollection } from 'astro:content';
+
+const allPosts = (await getCollection('blog')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+const startupPosts = allPosts.filter(p => p.data.startupNumber);
+const latestPosts = allPosts.slice(0, 5);
+
+// Stats
+const totalStartups = startupPosts.length;
+const failedCount = startupPosts.filter(p => p.data.status === 'failed').length;
+const aliveCount = startupPosts.filter(p => p.data.status === 'alive').length;
+const buildingCount = startupPosts.filter(p => p.data.status === 'building').length;
+---
+
+<!doctype html>
+<html lang="vi">
+	<head>
+		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+	</head>
+	<body>
+		<Header />
+
+		<!-- Hero -->
+		<section class="hero">
+			<div class="hero-inner">
+				<div class="hero-badge">build in public</div>
+				<h1>
+					<span class="hero-number">100</span>
+					<span class="hero-title">Lần Thất Bại</span>
+				</h1>
+				<p class="hero-subtitle">
+					Mình đang thử build 100 mini startup để xem lần thứ mấy sẽ thành công.
+					<br/>Mỗi lần fail là một bài học. Mỗi bài học là một bước tiến.
+					<br/>Đây là nhật ký hành trình đó.
+				</p>
+
+				<!-- Counter -->
+				<div class="counter-grid">
+					<div class="counter-item">
+						<span class="counter-value">{totalStartups}</span>
+						<span class="counter-label">Đã thử</span>
+					</div>
+					<div class="counter-item counter-fail">
+						<span class="counter-value">{failedCount}</span>
+						<span class="counter-label">Thất bại</span>
+					</div>
+					<div class="counter-item counter-alive">
+						<span class="counter-value">{aliveCount}</span>
+						<span class="counter-label">Còn sống</span>
+					</div>
+					<div class="counter-item counter-building">
+						<span class="counter-value">{buildingCount}</span>
+						<span class="counter-label">Đang build</span>
+					</div>
+				</div>
+
+				<!-- Progress bar -->
+				<div class="progress-section">
+					<div class="progress-bar">
+						<div class="progress-fill" style={`width: ${totalStartups}%`}></div>
+					</div>
+					<span class="progress-text">{totalStartups}/100</span>
+				</div>
+			</div>
+		</section>
+
+		<!-- Latest posts -->
+		<main>
+			<section class="latest-section">
+				<h2 class="section-title">
+					<span class="section-accent">//</span> Bài viết mới nhất
+				</h2>
+				{latestPosts.length === 0 ? (
+					<div class="empty-state">
+						<p>Chưa có bài viết nào. Hành trình sắp bắt đầu...</p>
+					</div>
+				) : (
+					<ul class="post-list">
+						{latestPosts.map((post) => (
+							<li class="post-item">
+								<a href={`/blog/${post.id}/`}>
+									<div class="post-meta">
+										{post.data.startupNumber && (
+											<span class="startup-number">#{String(post.data.startupNumber).padStart(3, '0')}</span>
+										)}
+										{post.data.status && (
+											<span class={`status status-${post.data.status}`}>{post.data.status}</span>
+										)}
+										<span class="post-date"><FormattedDate date={post.data.pubDate} /></span>
+									</div>
+									<h3 class="post-title">{post.data.title}</h3>
+									<p class="post-desc">{post.data.description}</p>
+									{post.data.lesson && (
+										<p class="post-lesson">💡 {post.data.lesson}</p>
+									)}
+								</a>
+							</li>
+						))}
+					</ul>
+				)}
+				{allPosts.length > 5 && (
+					<a href="/blog" class="view-all">Xem tất cả bài viết →</a>
+				)}
+			</section>
+
+			<!-- CTA -->
+			<section class="cta-section">
+				<h3>Theo dõi hành trình</h3>
+				<p>Mình chia sẻ mỗi lần build, mỗi lần fail, và mỗi bài học qua blog này. Nếu bạn cũng đang tìm đường, hãy đi cùng mình.</p>
+				<div class="cta-links">
+					<a href="/rss.xml" class="cta-btn">📡 RSS Feed</a>
+					<a href="/blog" class="cta-btn cta-btn-primary">📖 Đọc nhật ký</a>
+				</div>
+			</section>
+		</main>
+
+		<Footer />
+	</body>
+</html>
+
+<style>
+	/* Hero */
+	.hero {
+		border-bottom: 1px solid var(--border);
+		padding: 4rem 1.5rem 3rem;
+	}
+	.hero-inner {
+		max-width: 740px;
+		margin: 0 auto;
+	}
+	.hero-badge {
+		font-family: var(--font-mono), monospace;
+		font-size: 0.75rem;
+		color: var(--accent);
+		text-transform: uppercase;
+		letter-spacing: 0.12em;
+		margin-bottom: 1.5rem;
+		opacity: 0.8;
+	}
+	.hero h1 {
+		display: flex;
+		align-items: baseline;
+		gap: 0.6rem;
+		margin-bottom: 1rem;
+	}
+	.hero-number {
+		font-family: var(--font-mono), monospace;
+		font-size: 5rem;
+		font-weight: 700;
+		color: var(--accent);
+		line-height: 1;
+	}
+	.hero-title {
+		font-family: var(--font-body), sans-serif;
+		font-size: 2.2rem;
+		font-weight: 600;
+		color: var(--text);
+	}
+	.hero-subtitle {
+		font-size: 1.05rem;
+		color: var(--text-muted);
+		line-height: 1.8;
+		max-width: 540px;
+		margin-bottom: 2.5rem;
+	}
+
+	/* Counter */
+	.counter-grid {
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		gap: 1px;
+		background: var(--border);
+		border: 1px solid var(--border);
+		border-radius: 8px;
+		overflow: hidden;
+		margin-bottom: 2rem;
+	}
+	.counter-item {
+		background: var(--bg-surface);
+		padding: 1.2rem 1rem;
+		text-align: center;
+	}
+	.counter-value {
+		display: block;
+		font-family: var(--font-mono), monospace;
+		font-size: 2rem;
+		font-weight: 700;
+		color: var(--text);
+		line-height: 1;
+		margin-bottom: 0.3rem;
+	}
+	.counter-fail .counter-value { color: var(--fail); }
+	.counter-alive .counter-value { color: var(--alive); }
+	.counter-building .counter-value { color: var(--building); }
+	.counter-label {
+		font-size: 0.75rem;
+		color: var(--text-dim);
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+		font-family: var(--font-mono), monospace;
+	}
+
+	/* Progress */
+	.progress-section {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+	}
+	.progress-bar {
+		flex: 1;
+		height: 6px;
+		background: var(--bg-elevated);
+		border-radius: 3px;
+		overflow: hidden;
+		border: 1px solid var(--border);
+	}
+	.progress-fill {
+		height: 100%;
+		background: linear-gradient(90deg, var(--accent), var(--fail));
+		border-radius: 3px;
+		transition: width 0.5s ease;
+		min-width: 4px;
+	}
+	.progress-text {
+		font-family: var(--font-mono), monospace;
+		font-size: 0.85rem;
+		color: var(--text-muted);
+		white-space: nowrap;
+	}
+
+	/* Section */
+	.section-title {
+		font-size: 1rem;
+		color: var(--text-muted);
+		margin-bottom: 1.5rem;
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+	}
+	.section-accent {
+		color: var(--accent);
+	}
+
+	/* Posts */
+	.latest-section {
+		margin-bottom: 3rem;
+	}
+	.post-list {
+		list-style: none;
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 0;
+	}
+	.post-item {
+		border-bottom: 1px solid var(--border);
+	}
+	.post-item a {
+		display: block;
+		padding: 1.5rem 0;
+		text-decoration: none;
+		transition: background 0.15s;
+	}
+	.post-item a:hover {
+		background: var(--bg-surface);
+		margin: 0 -1rem;
+		padding: 1.5rem 1rem;
+		border-radius: 8px;
+	}
+	.post-meta {
+		display: flex;
+		align-items: center;
+		gap: 0.6rem;
+		margin-bottom: 0.5rem;
+		flex-wrap: wrap;
+	}
+	.post-date {
+		font-size: 0.8rem;
+		color: var(--text-dim);
+		font-family: var(--font-mono), monospace;
+	}
+	.post-title {
+		font-family: var(--font-body), sans-serif;
+		font-size: 1.25rem;
+		font-weight: 600;
+		color: var(--text);
+		margin-bottom: 0.4rem;
+		line-height: 1.4;
+	}
+	.post-desc {
+		font-size: 0.95rem;
+		color: var(--text-muted);
+		margin-bottom: 0;
+		line-height: 1.6;
+	}
+	.post-lesson {
+		font-size: 0.85rem;
+		color: var(--accent);
+		margin-top: 0.5rem;
+		margin-bottom: 0;
+		font-style: italic;
+	}
+	.view-all {
+		display: inline-block;
+		margin-top: 1.5rem;
+		font-family: var(--font-mono), monospace;
+		font-size: 0.85rem;
+	}
+	.empty-state {
+		padding: 3rem;
+		text-align: center;
+		border: 1px dashed var(--border);
+		border-radius: 8px;
+		color: var(--text-dim);
+	}
+
+	/* CTA */
+	.cta-section {
+		background: var(--bg-surface);
+		border: 1px solid var(--border);
+		border-radius: 12px;
+		padding: 2.5rem;
+		text-align: center;
+	}
+	.cta-section h3 {
+		font-family: var(--font-body), sans-serif;
+		margin-bottom: 0.75rem;
+	}
+	.cta-section p {
+		color: var(--text-muted);
+		font-size: 0.95rem;
+		max-width: 480px;
+		margin: 0 auto 1.5rem;
+	}
+	.cta-links {
+		display: flex;
+		gap: 0.75rem;
+		justify-content: center;
+		flex-wrap: wrap;
+	}
+	.cta-btn {
+		font-family: var(--font-mono), monospace;
+		font-size: 0.85rem;
+		padding: 0.6rem 1.5rem;
+		border-radius: 6px;
+		border: 1px solid var(--border);
+		color: var(--text-muted);
+		transition: all 0.2s;
+	}
+	.cta-btn:hover {
+		border-color: var(--accent);
+		color: var(--text);
+	}
+	.cta-btn-primary {
+		background: var(--accent);
+		border-color: var(--accent);
+		color: var(--bg);
+	}
+	.cta-btn-primary:hover {
+		background: var(--accent-hover);
+		color: var(--bg);
+	}
+
+	@media (max-width: 640px) {
+		.hero { padding: 2.5rem 1rem 2rem; }
+		.hero-number { font-size: 3.5rem; }
+		.hero-title { font-size: 1.6rem; }
+		.counter-grid { grid-template-columns: repeat(2, 1fr); }
+		.cta-section { padding: 1.5rem; }
+	}
+</style>

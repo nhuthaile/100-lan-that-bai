@@ -1,0 +1,225 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import FormattedDate from '../components/FormattedDate.astro';
+import Header from '../components/Header.astro';
+
+type Props = CollectionEntry<'blog'>['data'];
+
+const { title, description, pubDate, updatedDate, heroImage, startupNumber, startupName, status, buildTime, revenue, techStack, lesson, type } = Astro.props;
+---
+
+<html lang="vi">
+	<head>
+		<BaseHead title={title} description={description} />
+	</head>
+
+	<body>
+		<Header />
+		<main>
+			<article>
+				{heroImage && (
+					<div class="hero-image">
+						<Image width={1020} height={510} src={heroImage} alt="" />
+					</div>
+				)}
+				<div class="prose">
+					<!-- Post header -->
+					<div class="article-header">
+						<div class="article-meta">
+							{startupNumber && (
+								<span class="startup-number">#{String(startupNumber).padStart(3, '0')}</span>
+							)}
+							{status && (
+								<span class={`status status-${status}`}>{status}</span>
+							)}
+							{type && type !== 'general' && (
+								<span class="article-type">{type}</span>
+							)}
+						</div>
+
+						<h1>{title}</h1>
+
+						<div class="article-date">
+							<FormattedDate date={pubDate} />
+							{updatedDate && (
+								<span class="updated">
+									(cập nhật: <FormattedDate date={updatedDate} />)
+								</span>
+							)}
+						</div>
+
+						{/* Startup info card */}
+						{startupNumber && (
+							<div class="startup-card">
+								{startupName && <div class="sc-row"><span class="sc-label">Startup</span><span class="sc-value">{startupName}</span></div>}
+								{buildTime && <div class="sc-row"><span class="sc-label">Thời gian build</span><span class="sc-value">{buildTime}</span></div>}
+								{revenue && <div class="sc-row"><span class="sc-label">Doanh thu</span><span class="sc-value">{revenue}</span></div>}
+								{techStack && (
+									<div class="sc-row">
+										<span class="sc-label">Tech stack</span>
+										<span class="sc-value sc-tech">
+											{techStack.map(t => <span class="tech-tag">{t}</span>)}
+										</span>
+									</div>
+								)}
+								{lesson && <div class="sc-row sc-lesson"><span class="sc-label">Bài học chính</span><span class="sc-value">💡 {lesson}</span></div>}
+							</div>
+						)}
+					</div>
+
+					<hr />
+
+					<!-- Content -->
+					<slot />
+				</div>
+			</article>
+
+			<nav class="post-nav">
+				<a href="/blog">← Về danh sách bài viết</a>
+			</nav>
+		</main>
+		<Footer />
+	</body>
+</html>
+
+<style>
+	main {
+		width: 740px;
+		max-width: calc(100% - 2rem);
+		margin: 0 auto;
+		padding: 2rem 1rem 3rem;
+	}
+	.hero-image {
+		margin-bottom: 2rem;
+	}
+	.hero-image img {
+		width: 100%;
+		border-radius: 8px;
+		border: 1px solid var(--border);
+	}
+	.article-header {
+		margin-bottom: 1rem;
+	}
+	.article-meta {
+		display: flex;
+		gap: 0.5rem;
+		align-items: center;
+		margin-bottom: 1rem;
+		flex-wrap: wrap;
+	}
+	.article-type {
+		font-family: var(--font-mono), monospace;
+		font-size: 0.7rem;
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+		color: var(--text-dim);
+		background: var(--bg-elevated);
+		padding: 2px 8px;
+		border-radius: 3px;
+		border: 1px solid var(--border);
+	}
+	.article-header h1 {
+		font-family: var(--font-body), sans-serif;
+		font-size: 2.2rem;
+		font-weight: 700;
+		margin-bottom: 0.5rem;
+		line-height: 1.25;
+	}
+	.article-date {
+		font-family: var(--font-mono), monospace;
+		font-size: 0.85rem;
+		color: var(--text-dim);
+	}
+	.updated {
+		color: var(--text-dim);
+		font-style: italic;
+	}
+
+	/* Startup info card */
+	.startup-card {
+		margin-top: 1.5rem;
+		background: var(--bg-surface);
+		border: 1px solid var(--border);
+		border-radius: 8px;
+		padding: 1rem 1.25rem;
+	}
+	.sc-row {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 0.5rem 0;
+		border-bottom: 1px solid var(--border);
+	}
+	.sc-row:last-child {
+		border-bottom: none;
+	}
+	.sc-label {
+		font-family: var(--font-mono), monospace;
+		font-size: 0.75rem;
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+		color: var(--text-dim);
+	}
+	.sc-value {
+		font-size: 0.9rem;
+		color: var(--text);
+		font-weight: 500;
+	}
+	.sc-tech {
+		display: flex;
+		gap: 0.3rem;
+		flex-wrap: wrap;
+	}
+	.tech-tag {
+		font-family: var(--font-mono), monospace;
+		font-size: 0.7rem;
+		color: var(--text-dim);
+		background: var(--bg-elevated);
+		padding: 2px 8px;
+		border-radius: 3px;
+		border: 1px solid var(--border);
+	}
+	.sc-lesson .sc-value {
+		color: var(--accent);
+		font-style: italic;
+		font-size: 0.85rem;
+	}
+
+	/* Prose content */
+	.prose h2 {
+		margin-top: 2.5rem;
+		margin-bottom: 0.75rem;
+		font-family: var(--font-body), sans-serif;
+	}
+	.prose h3 {
+		margin-top: 2rem;
+		margin-bottom: 0.5rem;
+		font-family: var(--font-body), sans-serif;
+	}
+	.prose ul, .prose ol {
+		margin-bottom: 1.5rem;
+		padding-left: 1.5rem;
+	}
+	.prose li {
+		margin-bottom: 0.4rem;
+	}
+
+	/* Post nav */
+	.post-nav {
+		margin-top: 3rem;
+		padding-top: 1.5rem;
+		border-top: 1px solid var(--border);
+	}
+	.post-nav a {
+		font-family: var(--font-mono), monospace;
+		font-size: 0.85rem;
+	}
+
+	@media (max-width: 640px) {
+		.article-header h1 { font-size: 1.6rem; }
+		.sc-row { flex-direction: column; align-items: flex-start; gap: 0.25rem; }
+	}
+</style>

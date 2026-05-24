@@ -1,0 +1,233 @@
+---
+import { getCollection } from 'astro:content';
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_TITLE } from '../consts';
+
+const posts = await getCollection('blog');
+const startups = posts
+	.filter(p => p.data.startupNumber)
+	.sort((a, b) => (a.data.startupNumber || 0) - (b.data.startupNumber || 0));
+
+const failed = startups.filter(p => p.data.status === 'failed').length;
+const alive = startups.filter(p => p.data.status === 'alive').length;
+const building = startups.filter(p => p.data.status === 'building').length;
+const launched = startups.filter(p => p.data.status === 'launched').length;
+---
+
+<!doctype html>
+<html lang="vi">
+	<head>
+		<BaseHead title={`Dashboard — ${SITE_TITLE}`} description="Bảng tổng hợp 100 lần thử startup." />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<div class="page-header">
+				<h1>Dashboard</h1>
+				<p>Toàn cảnh hành trình 100 lần thất bại — cập nhật realtime.</p>
+			</div>
+
+			<!-- Stats -->
+			<div class="stats-grid">
+				<div class="stat-card">
+					<span class="stat-value">{startups.length}<span class="stat-total">/100</span></span>
+					<span class="stat-label">Đã thử</span>
+				</div>
+				<div class="stat-card">
+					<span class="stat-value" style="color: var(--fail)">{failed}</span>
+					<span class="stat-label">Thất bại</span>
+				</div>
+				<div class="stat-card">
+					<span class="stat-value" style="color: var(--alive)">{alive}</span>
+					<span class="stat-label">Còn sống</span>
+				</div>
+				<div class="stat-card">
+					<span class="stat-value" style="color: var(--building)">{building}</span>
+					<span class="stat-label">Đang build</span>
+				</div>
+			</div>
+
+			<!-- Startup table -->
+			<h2 class="section-title"><span class="section-accent">//</span> Danh sách startups</h2>
+
+			{startups.length === 0 ? (
+				<div class="empty-state">
+					<p>Chưa có startup nào. Lần thứ nhất sắp bắt đầu...</p>
+				</div>
+			) : (
+				<div class="table-wrap">
+					<table>
+						<thead>
+							<tr>
+								<th>#</th>
+								<th>Tên</th>
+								<th>Trạng thái</th>
+								<th>Thời gian</th>
+								<th>Doanh thu</th>
+							</tr>
+						</thead>
+						<tbody>
+							{startups.map(s => (
+								<tr>
+									<td><span class="startup-number">#{String(s.data.startupNumber).padStart(3, '0')}</span></td>
+									<td><a href={`/blog/${s.id}/`}>{s.data.startupName || s.data.title}</a></td>
+									<td><span class={`status status-${s.data.status}`}>{s.data.status}</span></td>
+									<td class="td-mono">{s.data.buildTime || '—'}</td>
+									<td class="td-mono">{s.data.revenue || '—'}</td>
+								</tr>
+							))}
+						</tbody>
+					</table>
+				</div>
+			)}
+
+			<!-- Empty slots -->
+			{startups.length < 100 && (
+				<div class="remaining">
+					<p>{100 - startups.length} lần thử còn lại</p>
+					<div class="dot-grid">
+						{Array.from({ length: 100 }).map((_, i) => (
+							<span class={`dot ${i < startups.length ? (startups[i]?.data.status === 'failed' ? 'dot-fail' : startups[i]?.data.status === 'alive' ? 'dot-alive' : 'dot-building') : ''}`}></span>
+						))}
+					</div>
+				</div>
+			)}
+		</main>
+		<Footer />
+	</body>
+</html>
+
+<style>
+	.page-header {
+		margin-bottom: 2.5rem;
+	}
+	.page-header h1 {
+		font-family: var(--font-body), sans-serif;
+		margin-bottom: 0.5rem;
+	}
+	.page-header p {
+		color: var(--text-muted);
+		margin: 0;
+	}
+
+	.stats-grid {
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		gap: 1px;
+		background: var(--border);
+		border: 1px solid var(--border);
+		border-radius: 8px;
+		overflow: hidden;
+		margin-bottom: 3rem;
+	}
+	.stat-card {
+		background: var(--bg-surface);
+		padding: 1.5rem;
+		text-align: center;
+	}
+	.stat-value {
+		display: block;
+		font-family: var(--font-mono), monospace;
+		font-size: 2.5rem;
+		font-weight: 700;
+		line-height: 1;
+		margin-bottom: 0.4rem;
+	}
+	.stat-total {
+		font-size: 1rem;
+		color: var(--text-dim);
+	}
+	.stat-label {
+		font-family: var(--font-mono), monospace;
+		font-size: 0.75rem;
+		color: var(--text-dim);
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+	}
+
+	.section-title {
+		font-size: 1rem;
+		color: var(--text-muted);
+		margin-bottom: 1.5rem;
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+	}
+	.section-accent { color: var(--accent); }
+
+	.table-wrap {
+		overflow-x: auto;
+		border: 1px solid var(--border);
+		border-radius: 8px;
+		margin-bottom: 3rem;
+	}
+	table {
+		width: 100%;
+		border-collapse: collapse;
+	}
+	th {
+		background: var(--bg-surface);
+		padding: 0.75rem 1rem;
+		font-family: var(--font-mono), monospace;
+		font-size: 0.75rem;
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+		color: var(--text-dim);
+		text-align: left;
+		border-bottom: 1px solid var(--border);
+	}
+	td {
+		padding: 0.75rem 1rem;
+		border-bottom: 1px solid var(--border);
+		font-size: 0.9rem;
+	}
+	.td-mono {
+		font-family: var(--font-mono), monospace;
+		font-size: 0.85rem;
+		color: var(--text-muted);
+	}
+	tr:last-child td { border-bottom: none; }
+	tr:hover td { background: var(--bg-surface); }
+
+	.empty-state {
+		padding: 4rem;
+		text-align: center;
+		border: 1px dashed var(--border);
+		border-radius: 8px;
+		color: var(--text-dim);
+		margin-bottom: 3rem;
+	}
+
+	.remaining {
+		text-align: center;
+	}
+	.remaining p {
+		font-family: var(--font-mono), monospace;
+		font-size: 0.85rem;
+		color: var(--text-dim);
+		margin-bottom: 1rem;
+	}
+	.dot-grid {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 4px;
+		justify-content: center;
+		max-width: 500px;
+		margin: 0 auto;
+	}
+	.dot {
+		width: 12px;
+		height: 12px;
+		border-radius: 2px;
+		background: var(--bg-elevated);
+		border: 1px solid var(--border);
+	}
+	.dot-fail { background: var(--fail); border-color: var(--fail); }
+	.dot-alive { background: var(--alive); border-color: var(--alive); }
+	.dot-building { background: var(--building); border-color: var(--building); }
+
+	@media (max-width: 640px) {
+		.stats-grid { grid-template-columns: repeat(2, 1fr); }
+	}
+</style>

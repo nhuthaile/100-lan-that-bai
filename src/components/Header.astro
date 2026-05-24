@@ -1,0 +1,93 @@
+---
+import { SITE_TITLE, SOCIAL_LINKS } from '../consts';
+import HeaderLink from './HeaderLink.astro';
+---
+
+<header>
+	<nav>
+		<a href="/" class="logo">
+			<span class="logo-number">100</span>
+			<span class="logo-text">lần thất bại</span>
+		</a>
+		<div class="nav-links">
+			<HeaderLink href="/blog">Nhật ký</HeaderLink>
+			<HeaderLink href="/dashboard">Dashboard</HeaderLink>
+			<HeaderLink href="/about">Về mình</HeaderLink>
+		</div>
+		<div class="social-links">
+			<a href={SOCIAL_LINKS.x} target="_blank" aria-label="X (Twitter)">
+				<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+					<path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+				</svg>
+			</a>
+			<a href={SOCIAL_LINKS.rss} aria-label="RSS Feed">
+				<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+					<path d="M6.18 15.64a2.18 2.18 0 0 1 2.18 2.18C8.36 19.01 7.38 20 6.18 20C4.98 20 4 19.01 4 17.82a2.18 2.18 0 0 1 2.18-2.18M4 4.44A15.56 15.56 0 0 1 19.56 20h-2.83A12.73 12.73 0 0 0 4 7.27V4.44m0 5.66a9.9 9.9 0 0 1 9.9 9.9h-2.83A7.07 7.07 0 0 0 4 12.93V10.1z"/>
+				</svg>
+			</a>
+		</div>
+	</nav>
+</header>
+
+<style>
+	header {
+		position: sticky;
+		top: 0;
+		z-index: 100;
+		background: rgba(10, 10, 11, 0.85);
+		backdrop-filter: blur(12px);
+		border-bottom: 1px solid var(--border);
+	}
+	nav {
+		max-width: 960px;
+		margin: 0 auto;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: 0 1.5rem;
+		height: 64px;
+	}
+	.logo {
+		display: flex;
+		align-items: baseline;
+		gap: 0.4rem;
+		text-decoration: none;
+		color: var(--text);
+	}
+	.logo-number {
+		font-family: var(--font-mono), monospace;
+		font-size: 1.6rem;
+		font-weight: 700;
+		color: var(--accent);
+		line-height: 1;
+	}
+	.logo-text {
+		font-family: var(--font-body), sans-serif;
+		font-size: 0.85rem;
+		color: var(--text-muted);
+		text-transform: lowercase;
+		letter-spacing: 0.02em;
+	}
+	.nav-links {
+		display: flex;
+		gap: 0.25rem;
+	}
+	.social-links {
+		display: flex;
+		gap: 0.75rem;
+		align-items: center;
+	}
+	.social-links a {
+		color: var(--text-dim);
+		transition: color 0.2s;
+		display: flex;
+	}
+	.social-links a:hover {
+		color: var(--accent);
+	}
+	@media (max-width: 640px) {
+		nav { padding: 0 1rem; }
+		.social-links { display: none; }
+		.nav-links { gap: 0; }
+	}
+</style>

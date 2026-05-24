@@ -1,0 +1,93 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_TITLE } from '../consts';
+---
+
+<!doctype html>
+<html lang="vi">
+	<head>
+		<BaseHead title={`Về mình — ${SITE_TITLE}`} description="Câu chuyện đằng sau dự án 100 Lần Thất Bại." />
+	</head>
+	<body>
+		<Header />
+		<main>
+			<article class="prose">
+				<h1>Về mình</h1>
+
+				<p>
+					Mình là một developer/maker ẩn danh ở Việt Nam. Mình không lộ mặt,
+					không khoe thành tích, và không tự nhận là chuyên gia.
+				</p>
+
+				<p>
+					Mình chỉ là một người bình thường đang thử một thí nghiệm: <strong>build 100 mini startup
+					để xem lần thứ mấy sẽ thành công.</strong>
+				</p>
+
+				<h2>Tại sao 100?</h2>
+
+				<p>
+					Vì mình tin rằng thành công không phải là do tài năng hay may mắn — mà là do bạn
+					thử đủ nhiều lần. Pieter Levels build 70+ sản phẩm, chỉ có 4 cái thành công.
+					Tony Dinh thử hơn 10 sản phẩm, chỉ 4 cái tạo ra doanh thu. Nhưng chính những cái
+					thất bại đó là nền tảng cho thành công sau này.
+				</p>
+
+				<p>Mình muốn tự kiểm chứng điều đó.</p>
+
+				<h2>Dự án này để làm gì?</h2>
+
+				<p>
+					<strong>Cho mình:</strong> ghi lại hành trình, mỗi lần nhìn lại sẽ thấy mình đã
+					tiến xa đến đâu.
+				</p>
+				<p>
+					<strong>Cho bạn:</strong> nếu bạn cũng đang mất phương hướng, chưa biết bắt đầu
+					từ đâu — thì biết rằng có một người cũng đang loay hoay y như bạn, nhưng vẫn
+					bước tiếp.
+				</p>
+				<p>
+					<strong>Cho cộng đồng:</strong> mình muốn tìm những người có cùng tư tưởng,
+					cùng build, cùng fail, cùng chia sẻ.
+				</p>
+
+				<h2>Liên hệ</h2>
+
+				<p>
+					Bạn có thể theo dõi mình trên <a href="https://x.com/100lanthatbai">X (Twitter)</a>
+					hoặc đọc blog này. Nếu muốn nói chuyện, cứ DM mình trên X.
+				</p>
+
+				<p class="signature">— Anonymous Founder, đâu đó ở Việt Nam 🇻🇳</p>
+			</article>
+		</main>
+		<Footer />
+	</body>
+</html>
+
+<style>
+	.prose {
+		max-width: 640px;
+	}
+	.prose h1 {
+		font-family: var(--font-body), sans-serif;
+		font-size: 2rem;
+		margin-bottom: 1.5rem;
+	}
+	.prose h2 {
+		font-family: var(--font-body), sans-serif;
+		font-size: 1.3rem;
+		margin-top: 2.5rem;
+		margin-bottom: 0.75rem;
+		color: var(--accent);
+	}
+	.signature {
+		margin-top: 3rem;
+		font-style: italic;
+		color: var(--text-muted);
+		font-family: var(--font-mono), monospace;
+		font-size: 0.9rem;
+	}
+</style>
