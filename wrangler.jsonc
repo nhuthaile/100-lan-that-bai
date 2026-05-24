@@ -1,7 +1,7 @@
 {
 	"compatibility_date": "2026-05-24",
 	"compatibility_flags": ["global_fetch_strictly_public"],
-	"name": "home-claude-100-lan-that-bai",
+	"name": "100-lan-that-bai",
 	"main": "@astrojs/cloudflare/entrypoints/server",
 	"assets": {
 		"directory": "./dist",
